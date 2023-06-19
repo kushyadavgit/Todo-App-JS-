@@ -1,143 +1,201 @@
-let data = [];
-let itemCount = 1;
-const cards = document.getElementById("cards");
-const cardDetail = document.getElementById("card-detail");
-const cardDetailTitle = document.getElementById("card-modal-title");
+const addbtn1 = document.querySelector(".button1");
+const addbtn2 = document.querySelector(".add1");
+const flexcontainer = document.querySelector(".container");
+const mainBody = document.querySelector("body");
 
-// Script for Modal 🍱
-const modal = () => {
-  const openEls = document.querySelectorAll("[data-open]");
-  const closeEls = document.querySelectorAll("[data-close]");
-  const isVisible = "is-visible";
+const displayJustCard = document.querySelector(".displayJustCard");
 
-  for (const el of openEls) {
-    el.addEventListener("click", function () {
-      const modalId = this.dataset.open;
-      document.getElementById(modalId).classList.add(isVisible);
-    });
-  }
+let newList = document.querySelector(".addlist");
 
-  for (const el of closeEls) {
-    el.addEventListener("click", function () {
-      this.parentElement.parentElement.parentElement.classList.remove(
-        isVisible
-      );
-    });
-  }
+// created an array
+data = [];
+let cardId;
 
-  document.addEventListener("click", (e) => {
-    if (e.target == document.querySelector(".modal.is-visible")) {
-      document.querySelector(".modal.is-visible").classList.remove(isVisible);
-    }
-  });
-
-  document.addEventListener("keyup", (e) => {
-    // if we press the ESC
-    if (e.key == "Escape" && document.querySelector(".modal.is-visible")) {
-      document.querySelector(".modal.is-visible").classList.remove(isVisible);
-    }
-  });
-};
-
-// Creation of Cards
-let acceptData = () => {
-  let cardTitle = document.getElementById("list-title").value;
-  cardTitle = (cardTitle[0].toUpperCase() + cardTitle.substring(1)).trim();
-  data.push({
-    id: Date.now(),
-    name: cardTitle,
-  });
-
-  localStorage.setItem("data", JSON.stringify(data));
-  console.log(data);
-  // createCards();
-  location.reload();
-  location.reload();
-  resetValue(cardTitle);
-};
-
-const resetValue = (param) => {
-  param.value = "";
-};
-
-let createCards = () => {
-  data.map((x, y) => {
-    return (cards.innerHTML += `<div id=${y} class="card">
-        <span class="card__title" data-open="card-modal-list" onclick="viewCardDetail(this)">${x.name}</a></span>
-          <hr class="card-hr" />
-          <br />
-          <ul id="items-list-${y}" class="items-list">
-          </ul>
-          <br /><br />
-          <div id="add-btn-${y}" class="add-item-button" data-open="modal-list-2" onclick="getBtnID(event)">
-            <img src="./icons8-plus-50.png" alt="" >
-          </div>
-          <div class="delete-button" onclick="deleteCard(this)">
-            <img src="./bin.svg" alt="">
-          </div>
-      </div>`);
-  });
-
-  modal();
-};
-
-let btnID = "";
-function getBtnID(e) {
-  btnID =
-    e.target.parentElement.previousSibling.previousSibling.previousSibling
-      .previousSibling.previousSibling.id;
+// to make 1st popup visible
+function addNewItem() {
+  let newList = document.querySelector(".addlist");
+  newList.style.display = "block";
 }
 
-const addItems = () => {
-  let itemName = document.getElementById("list-item-title").value;
-  let li = document.createElement("li");
-  document.getElementById(btnID).appendChild(li);
-  li.id = `item-${itemCount++}`;
-  li.innerHTML = `${itemName}<button class="btn-done" onclick="itemChecked(this)">done</button>`;
-};
+// to close the first popup
+function closeIt() {
+  let newList = document.querySelector(".addlist");
+  newList.style.display = "none";
+}
 
-let itemChecked = (e) => {
-  e.parentElement.classList.add("checked");
-  e.classList.add("hide");
-};
+// to add flex card
+function addFlex() {
+  newList.style.display = "none";
+  const flexHead = document.getElementById("myInput").value;
 
-let deleteCard = (e) => {
-  e.parentElement.remove();
+  const item = {
+    id: new Date().getTime().toString(),
+    title: flexHead,
+    content: [],
+  };
 
-  data.splice(e.parentElement.id, 1);
-
-  localStorage.setItem("data", JSON.stringify(data));
-
-  location.reload();
-  console.log(data);
-};
-
-const viewCardDetail = (e) => {
-  cardDetailTitle.innerText = e.innerText;
-  cardDetail.innerHTML = e.parentElement.innerHTML;
-  let children = cardDetail.children;
-  children[6].style.display = "none";
-  // children[6].setAttribute("data-modal", "modal-list-3");
-  // children[6].addEventListener("click", function () {
-  //   document.getElementById("modal-list-3").style.visibility = "visible";
-  //   document.getElementById("modal-list-3").style.opacity = 1;
-  // });
-  children[7].style.display = "none";
-};
-
-// Card View add item modal
-const modalClose = () => {
-  document.getElementById("modal-list-3").style.visibility = "hidden";
-  document.getElementById("modal-list-3").style.opacity = 0;
-};
-
-modal();
-(() => {
-  data = JSON.parse(localStorage.getItem("data")) || [];
-  console.log(data);
-  if (data.length === 0) {
-    document.getElementById("message").style.visibility = "visible";
-    document.getElementById("message").style.opacity = 1;
+  if (flexHead) {
+    data.push(item);
+    addCard();
+  } else {
+    alert("Enter the title");
   }
-  createCards();
-})();
+
+  document.getElementById("myInput").value = "";
+
+  const cardHeading = document.querySelector(".cardHeading");
+  cardHeading.innerHTML = "";
+
+  const navBar = document.querySelector(".head1");
+  navBar.style.display = "block";
+
+  const backButton = document.querySelector(".back");
+  backButton.style.display = "none";
+}
+
+// to delete the flex card
+function deleteIt(id) {
+  const cardId = `${id}`;
+  const card = document.getElementById(cardId);
+  card.parentNode.removeChild(card);
+  data = data.filter((item) => item.id !== id);
+}
+
+// made a second popup
+function addCardList(id) {
+  let newText = document.querySelector(".addlist2");
+  newText.style.display = "block";
+  cardId = id;
+}
+
+// To close the second popup
+function closeText() {
+  let newList = document.querySelector(".addlist2");
+  newList.style.display = "none";
+}
+
+function renderContents() {
+  for (let i = 0; i < data.length; i++) {
+    let ulelement = document.getElementById(`content_list_${data[i].id}`);
+    let child = "";
+    for (let j = 0; j < data[i].content.length; j++) {
+      let content = data[i].content[j];
+      child += `<li class = "content ${
+        content.done ? "checked" : ""
+      }" id="content_${content.id}" onclick ="doneTask(${content.id}, ${
+        data[i].id
+      })">${content.contentText}</li>`;
+      console.log(data[i]);
+    }
+    ulelement.innerHTML = child;
+    console.log(data);
+  }
+}
+
+// adding viva list
+function addCard() {
+  const cardcontainer = document.querySelector(".container1");
+  let child = "";
+  for (let i = 0; i < data.length; i++) {
+    //   console.log("data[i]:", data[i]);
+    child += `<div id="${data[i].id}" class="card">
+      <div value="${data[i].title}" onclick ="displayMyCard(${data[i].id}, this.getAttribute('value'))" class="ftext1">${data[i].title}</div>
+      <hr>
+      <div class="task1">
+          <ul id="content_list_${data[i].id}">
+          </ul>
+      </div>    
+          <div class = "btnspace">
+          <button value = ${data[i].id} onclick ="deleteIt(this.value)" class = "delb"><i class="fa fa-trash" aria-hidden="true"></i></button>
+          <button value = ${data[i].id} onclick ="addCardList(this.value)"  class = "plusbutn"><i class="fa fa-plus" aria-hidden="true"></i></button>
+          </div>
+          </div>`;
+  }
+  cardcontainer.innerHTML = child;
+  renderContents();
+  console.log(data);
+}
+
+function addContenttext() {
+  const contentListId = `content_list_${cardId}`;
+  // console.log(cardId);
+  const Ul = document.getElementById(contentListId);
+  const contentText = document.getElementById("myInput1").value;
+  if (!contentText) {
+    alert("Please add task name");
+  } else {
+    document.getElementById("myInput1").value = "";
+    const liNode = document.createElement("li");
+
+    liNode.innerHTML = contentText;
+    liNode.className = "content";
+
+    Ul.appendChild(liNode);
+    closeText();
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].id == cardId) {
+        let content = {
+          id: new Date().getTime().toString(),
+          contentText: contentText,
+          done: false,
+        };
+        data[i].content.push(content);
+        // console.log(data[i].content);
+      }
+    }
+    renderContents();
+  }
+}
+
+function doneTask(taskId, cardId) {
+  const contentId = `content_${taskId}`;
+  const liElement = document.getElementById(contentId);
+  liElement.classList.toggle("checked");
+
+  for (let i = 0; i < data.length; i++) {
+    if (data[i].id == cardId) {
+      for (let j = 0; j < data[i].content.length; j++) {
+        const content = data[i].content[j];
+        if (content.id == taskId) {
+          data[i].content[j].done = !data[i].content[j].done;
+          // data[i].content[j].done = true;
+        }
+      }
+    }
+  }
+}
+
+function displayMyCard(id, value) {
+  addbtn1.style.display = "block";
+
+  const cardHeading = document.querySelector(".cardHeading");
+  cardHeading.innerHTML = value;
+
+  const cards = document.querySelectorAll(".card");
+  cards.forEach((allcards) => {
+    allcards.style.display = "none";
+  });
+  const cardToShow = document.getElementById(id);
+  cardToShow.style.display = "block";
+
+  const navBar = document.querySelector(".head1");
+  navBar.style.display = "none";
+
+  const backButton = document.querySelector(".back");
+  backButton.style.display = "block";
+}
+
+function openFirstPage() {
+  const cards = document.querySelectorAll(".card");
+  const cardHeading = document.querySelector(".cardHeading");
+  cardHeading.innerHTML = "";
+  cards.forEach((allcards) => {
+    allcards.style.display = "block";
+  });
+  const navBar = document.querySelector(".head1");
+  navBar.style.display = "block";
+
+  const backButton = document.querySelector(".back");
+  backButton.style.display = "none";
+}
+
